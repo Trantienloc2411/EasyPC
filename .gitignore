@@ -1005,3 +1005,8 @@ e2e/*.map
 .DS_Store/
 
 # End of https://www.toptal.com/developers/gitignore/api/angular
+frontend/easypc-webapp/pnpm-lock.yaml
+backend/EasyPC/EasyPC.AppHost/appsettings.Development.json
+backend/EasyPC/EasyPC.Api/appsettings.Development.json
+backend/EasyPC/EasyPC.AppHost/appsettings.json
+backend/EasyPC/EasyPC.Api/appsettings.json
