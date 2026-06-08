@@ -1,0 +1,7 @@
+﻿services:
+  easypc.api:
+    image: easypc.api
+    build:
+      context: .
+      dockerfile: EasyPC.Api/Dockerfile
+
