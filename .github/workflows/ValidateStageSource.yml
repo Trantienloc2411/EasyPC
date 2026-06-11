@@ -1,0 +1,16 @@
+name: Validate Stage Source
+
+on:
+  pull_request:
+    branches:
+      - stage
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if [ "${{ github.head_ref }}" != "development" ]; then
+            echo "Only development can be merged into stage"
+            exit 1
+          fi
