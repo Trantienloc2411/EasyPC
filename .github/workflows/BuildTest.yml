@@ -1,0 +1,89 @@
+name: CI/CD .NET 10
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      
+      # Backend
+      - name: Restore .NET dependencies
+        run: dotnet restore backend/EasyPC/EasyPC.sln
+      
+      - name: Build .NET
+        run: dotnet build backend/EasyPC/EasyPC.sln --no-restore --configuration Release
+      
+      - name: Check for test projects
+        id: check-tests
+        run: |
+          if dotnet sln backend/EasyPC/EasyPC.sln list | grep -i "test"; then
+            echo "has_tests=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_tests=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Run .NET Tests
+        if: steps.check-tests.outputs.has_tests == 'true'
+        run: dotnet test backend/EasyPC/EasyPC.sln --no-build --verbosity normal --configuration Release
+      
+      # Upload artifacts để deploy
+      - name: Publish .NET Application
+        run: dotnet publish backend/EasyPC/EasyPC.sln --configuration Release --output ./publish
+      
+      - name: Publish Backend Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-artifact
+          path: ./publish
+
+  cleanup-artifacts:
+    name: Keep only 2 latest artifacts
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: always()
+    permissions:
+      actions: write
+
+    steps:
+      - name: Delete old artifacts (keep latest 2)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const artifactName = 'backend-artifact';
+            const keepCount = 2;
+
+            const { data } = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: artifactName,
+              per_page: 100,
+            });
+
+            const sorted = data.artifacts.sort(
+              (a, b) => new Date(b.created_at) - new Date(a.created_at)
+            );
+
+            const toDelete = sorted.slice(keepCount);
+            if (toDelete.length === 0) {
+              console.log(`Only ${sorted.length} artifact(s) found — nothing to delete.`);
+              return;
+            }
+
+            for (const artifact of toDelete) {
+              console.log(`Deleting artifact: ${artifact.name} (id=${artifact.id}, created=${artifact.created_at})`);
+              await github.rest.actions.deleteArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: artifact.id,
+              });
+            }
+            console.log(`Deleted ${toDelete.length} old artifact(s). Kept ${keepCount}.`);
