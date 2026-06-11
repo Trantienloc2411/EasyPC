@@ -1,4 +1,4 @@
-# EasyPC
+# EasyPC - [![CI/CD .NET 10](https://github.com/Trantienloc2411/EasyPC/actions/workflows/BuildTest.yml/badge.svg)](https://github.com/Trantienloc2411/EasyPC/actions/workflows/BuildTest.yml)
 
 EasyPC is an intelligent PC building platform that helps users create compatible computer builds, receive hardware recommendations, estimate costs, and plan future upgrades.
 
