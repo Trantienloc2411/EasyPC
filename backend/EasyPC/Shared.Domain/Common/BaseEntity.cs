@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shared.Domain.Common;
 
@@ -13,7 +14,7 @@ public abstract class BaseEntity
     public bool IsDeleted { get; protected set; } = false;
     
     [Timestamp] public byte[] RowVersion { get;  set; }  = Array.Empty<byte>();
-    
+    [NotMapped]
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     public void RaiseDomainEvent(DomainEvent domainEvent)

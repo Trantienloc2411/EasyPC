@@ -3,6 +3,7 @@ using System.Net;
 using AuthorizationModule.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Shared.Domain.Common;
 
 namespace AuthorizationModule.Infrastructure.Data;
 
@@ -27,6 +28,7 @@ public class AuthorizationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Ignore<DomainEvent>();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AuthorizationDbContext).Assembly);
     }
 
