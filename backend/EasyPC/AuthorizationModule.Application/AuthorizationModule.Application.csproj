@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\AuthorizationModule.Domain\AuthorizationModule.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
